@@ -14,36 +14,34 @@ import threading
 import os
 
 from PIL import Image, ImageTk
-# import tkutils as tku
-# import win_ai
-# import win_single
-# import win_multi
-
-# result_str = tk.StringVar()
 
 word_list = []
-# temp_word_list = []
+
+debug_release = "debug"
+
+version = "v1.1"
 
 default_time_value = 120
 time_value = default_time_value
-
+word_list_debug = ["asdaasdas", "练习练习1111练习练习练习练习练习1", "练习练习2222练习练习练习练习练习1", "练习练习3333练习练习练习练习练习1", "练习练习4444练习练习练习练习练习1"]
 
 class Guess:
 
     def __init__(self):
         logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
         self.root = tk.Tk()
-        self.root.geometry("%dx%d" % (1000, 400))  # 窗体尺寸
-        self.root.title("你来比划我来猜v1.1")
+
+        self.__window_width = self.root.winfo_screenwidth()-100
+        height = self.root.winfo_screenheight()-100
+        print(self.__window_width, height)
+        self.root.geometry("%dx%d" % (self.__window_width, height))  # 窗体尺寸
+        self.root.title("你来比划我来猜%s" %(version))
         self.__correct = 0
         self.__result_str = tk.StringVar()
-        # self.__result_str.set("正确个数: 0")
-        # print(self.__result_str)
         self.__time_str = tk.StringVar()
         logging.debug("test, str=%s" %(self.__result_str))
         self.__word = tk.StringVar()
         self.body()
-        # self.time = threading.Timer()
         self.timer_config()
         self.__state = 1
         self.get_word_list('word_list.txt')
@@ -79,19 +77,24 @@ class Guess:
         self.word_frame = tk.Frame(self.main_frame)
         self.word_frame.pack(side='bottom', expand=tk.YES, fill=tk.X)
         self.__word.set('猜词游戏')
-        self.word_text = tk.Label(self.word_frame, textvariable=self.__word, bg="white", font=('Arial', 120), width=100, height=20)
+        self.word_text = tk.Label(self.word_frame, textvariable=self.__word, bg="white", font=('Arial', 120),
+                                  width=100, height=20, wraplength=self.__window_width-100, justify='center')
         self.word_text.pack(side='bottom', expand=tk.YES, fill=tk.X)
 
     def get_word_list(self, file):
+        global word_list
+        if(debug_release == 'debug'):
+            word_list = word_list_debug
+            return
         if(not os.path.exists(file)):
             print("no file")
         else:
-            global word_list
             with open(file, 'r') as f:
                 for eachLiine in f.readlines():  # 读取文件的每一行
                     word_list.append(eachLiine)
                 f.close()
                 word_list = list(set(word_list))
+
 
     def update_word(self, list_w):
         len_list = len(list_w)
@@ -114,7 +117,6 @@ class Guess:
         self.timer_config()
         time_value = default_time_value
         self.__time_str.set(time_value)
-
 
     def start_callback(self):
         self.__correct = 0
